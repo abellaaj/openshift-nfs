@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>NFS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <!-- See configuration in WebMvConfig.java -->
+    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen"/>
+
+
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
+</head>
+
+<body>
+
+<h2 class="card-title">Hello NFS</h2>
+
+<table class="table table-sm">
+    <thead>
+    <tr>
+        <th scope="col"> Type</th>
+        <th scope="col"> Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:if="${files.empty}" scope="row">
+        <td colspan="2"> No Files Available</td>
+    </tr>
+    <tr th:each="file : ${files}" scope="row">
+        <td>
+            <div th:switch="${file.dir}">
+                <img th:case="false" th:src="@{images/file.png}"/>
+                <img th:case="true" th:src="@{images/folder.png}"/>
+            </div>
+        </td>
+        <td><span th:text="${file.name}"> Name </span></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+
+</html>

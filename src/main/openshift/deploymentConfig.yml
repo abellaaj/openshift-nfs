@@ -1,0 +1,53 @@
+#oc import-image @project.artifactId@:@project.version@ --from=docker.io/tadartiw/@project.artifactId@:@project.version@ --confirm
+#oc import-image @project.artifactId@:@project.version@
+#oc create -f @project.build.directory@/openshift/deploymentConfig.yml
+#oc apply -f restricted-flexvolume-scc.yml
+
+kind: "DeploymentConfig"
+apiVersion: "v1"
+metadata:
+  name: "@project.artifactId@"
+spec:
+  template:
+    metadata:
+      labels:
+        name: "@project.artifactId@"
+    spec:
+      containers:
+        - name: "@project.artifactId@"
+          image: "docker.io/tadartiw/@project.artifactId@"
+          volumeMounts:
+            - mountPath: /app/config
+              name: @project.artifactId@-config-volume
+            - mountPath: /app/nfs
+              name: nfs-volume
+      securityContext:
+        supplementalGroups: [1000]
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: @project.artifactId@-config
+            items:
+              - key: application.yaml
+                path: application.yaml
+          name: @project.artifactId@-config-volume
+        - name: nfs-volume
+          nfs:
+            server: 114.121.227.100
+            path: /appli/share
+  replicas: 1
+  triggers:
+    - type: "ConfigChange"
+    - type: "ImageChange"
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - "@project.artifactId@"
+        from:
+          kind: "ImageStreamTag"
+          name: "@project.artifactId@:@project.version@"
+  strategy:
+    type: "Rolling"
+  paused: false
+  revisionHistoryLimit: 2
+  minReadySeconds: 0

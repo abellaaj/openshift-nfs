@@ -1,0 +1,14 @@
+#oc create -f @project.build.directory@/openshift/configMap.yml
+apiVersion: v1
+data:
+  application.yaml: |+
+    app:
+      dir: /app/nfs
+kind: ConfigMap
+metadata:
+  name: @project.artifactId@-config
+
+
+
+
+
